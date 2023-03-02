@@ -11,12 +11,6 @@ class AppServiceTest {
 
     AppRepository repository = new AppRepository();
 
-    @BeforeEach
-    void beforeEach() {
-        App app = App.createApp("aa", "bb");
-        repository.sava(app);
-    }
-
     @AfterEach
     void afterEach() {
         repository.clearAll();
@@ -34,6 +28,9 @@ class AppServiceTest {
 
     @Test
     void delete() {
+        App app = App.createApp("aa", "bb");
+        repository.sava(app);
+
         App findApp = repository.findOne(1L);
 
         Long delete = repository.delete(findApp.getId());
@@ -46,7 +43,10 @@ class AppServiceTest {
 
     @Test
     void update() {
-        App findApp = repository.findOne(1L);
+        App app = App.createApp("aa", "bb");
+        Long findId = repository.sava(app);
+
+        App findApp = repository.findOne(findId);
 
         App update = repository.update(findApp.getId(), "11", "22");
 

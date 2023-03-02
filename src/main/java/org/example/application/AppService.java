@@ -1,5 +1,7 @@
 package org.example.application;
 
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
@@ -8,6 +10,7 @@ public class AppService {
 
     AppRepository repository = new AppRepository();
     Scanner sc = new Scanner(System.in);
+
     public void register() {
         System.out.print("명언 : ");
         String saying = sc.next();
@@ -22,9 +25,15 @@ public class AppService {
 
     public void listAll() {
         System.out.println("번호 / 작가 / 명언");
+        System.out.println("----------------------");
         List<App> apps = repository.findAll();
+        List<App> list = new ArrayList<>();
 
-        for (App app : apps) {
+        for (int i = apps.size() -1; i >= 0; i--) {
+            list.add(apps.get(i));
+        }
+
+        for (App app : list) {
             System.out.println(app.getId() + " / "
                     + app.getAuthor() + " / "
                     + app.getSaying());
@@ -68,6 +77,42 @@ public class AppService {
 
         } catch (NullPointerException e) {
             System.out.println(id +"번 명언은 존재하지 않습니다.");
+        }
+    }
+
+    public void fileSave(File file) {
+        List<App> findAll = repository.findAll();
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            for (App app : findAll) {
+                writer.write(String.valueOf("/" +app.getId()));
+                writer.write("/" + app.getAuthor());
+                writer.write("/" + app.getSaying() +"\n");
+            }
+            writer.close();
+            System.out.println("파일이 저장되었습니다.");
+        } catch (IOException e) {
+            System.out.println("저장에 실패했습니다.");
+        }
+
+    }
+
+    public void loadData(File file) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+
+            String str;
+            while ((str =reader.readLine()) != null){
+                String[] split = str.split("/");
+                App app = App.createApp(split[3], split[2]);
+                repository.sava(app);
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("파일 읽기 실패");
+        } catch (IOException e) {
+            System.out.println("파일 읽기 실패");
         }
     }
 }
