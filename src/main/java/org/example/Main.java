@@ -9,7 +9,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         AppController controller = new AppController();
 
-        File file = controller.tester();
+        File file = controller.textController();
 
         controller.startApp(file);
 

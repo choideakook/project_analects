@@ -1,5 +1,7 @@
 package org.example.application;
 
+import org.json.simple.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
@@ -29,6 +31,7 @@ public class AppController {
                 case "종료":
                     loop = false;
                     service.fileSave(file);
+                    service.jsonSave();
                     break;
                 case "등록":
                     service.register();
@@ -51,7 +54,7 @@ public class AppController {
     }
 
     //-- file save controller --//
-    public File tester() throws IOException {
+    public File textController() throws IOException {
         AppController controller = new AppController();
         File directory = new File("/Users/choedaegug/Desktop/db");
 

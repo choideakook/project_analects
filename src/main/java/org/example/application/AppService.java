@@ -1,5 +1,10 @@
 package org.example.application;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +34,7 @@ public class AppService {
         List<App> apps = repository.findAll();
         List<App> list = new ArrayList<>();
 
-        for (int i = apps.size() -1; i >= 0; i--) {
+        for (int i = apps.size() - 1; i >= 0; i--) {
             list.add(apps.get(i));
         }
 
@@ -50,7 +55,7 @@ public class AppService {
             repository.delete(findApp.getId());
             System.out.println(id + "번 명언이 삭제되었습니다.");
         } catch (NullPointerException e) {
-            System.out.println(id +"번 명언은 존재하지 않습니다.");
+            System.out.println(id + "번 명언은 존재하지 않습니다.");
         }
     }
 
@@ -76,19 +81,66 @@ public class AppService {
             System.out.println(id + " / " + saying + " / " + author);
 
         } catch (NullPointerException e) {
-            System.out.println(id +"번 명언은 존재하지 않습니다.");
+            System.out.println(id + "번 명언은 존재하지 않습니다.");
         }
     }
 
+    //-- json save --//
+    public void jsonSave() {
+        List<App> findAll = repository.findAll();
+
+        JSONArray jArray = new JSONArray();
+        JSONObject result = new JSONObject();
+
+        for (App app : findAll) {
+            JSONObject obj = new JSONObject();
+            obj.put("id", app.getId());
+            obj.put("author", app.getAuthor());
+            obj.put("saying", app.getSaying());
+            jArray.add(obj);
+        }
+
+        result.put("result", jArray);
+
+        try {
+            FileWriter file = new FileWriter("/Users/choedaegug/Desktop/db/db.json");
+            file.write(result.toString());
+            file.flush();
+            file.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //-- json load --//
+    public void jsonLoad() {
+        JSONParser parser = new JSONParser();
+
+        try {
+            FileReader reader = new FileReader("/Users/choedaegug/Desktop/db/db.json");
+            Object obj = parser.parse(reader);
+
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    //-- text save --//
     public void fileSave(File file) {
         List<App> findAll = repository.findAll();
 
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(file));
             for (App app : findAll) {
-                writer.write(String.valueOf("/" +app.getId()));
+                writer.write(String.valueOf("/" + app.getId()));
                 writer.write("/" + app.getAuthor());
-                writer.write("/" + app.getSaying() +"\n");
+                writer.write("/" + app.getSaying() + "\n");
             }
             writer.close();
             System.out.println("파일이 저장되었습니다.");
@@ -98,12 +150,13 @@ public class AppService {
 
     }
 
+    //-- text load --//
     public void loadData(File file) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
 
             String str;
-            while ((str =reader.readLine()) != null){
+            while ((str = reader.readLine()) != null) {
                 String[] split = str.split("/");
                 App app = App.createApp(split[3], split[2]);
                 repository.sava(app);
