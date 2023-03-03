@@ -2,21 +2,21 @@ package org.example.application;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Service
+ */
 public class AppService {
 
-    AppRepository repository = new AppRepository();
-    Scanner sc = new Scanner(System.in);
+    private final AppRepository repository = new AppRepository();
 
-    public void register() {
+    //-- 등록 --//
+    public void register(Scanner sc) {
         System.out.print("명언 : ");
         String saying = sc.next();
         System.out.print("작가 : ");
@@ -28,6 +28,7 @@ public class AppService {
         System.out.println(appId + " 번 명언이 등록되었습니다.");
     }
 
+    //-- 목록 --//
     public void listAll() {
         System.out.println("번호 / 작가 / 명언");
         System.out.println("----------------------");
@@ -45,11 +46,11 @@ public class AppService {
         }
     }
 
-    public void delete() {
-        System.out.print("id = ");
-        long id = sc.nextLong();
-
-        App findApp = repository.findOne(id);
+    //-- 삭제 --//
+    public String delete(Scanner sc, String command) {
+        App findApp = appFinder(command);
+        if (findApp == null) return "실패";
+        Long id = findApp.getId();
 
         try {
             repository.delete(findApp.getId());
@@ -57,13 +58,14 @@ public class AppService {
         } catch (NullPointerException e) {
             System.out.println(id + "번 명언은 존재하지 않습니다.");
         }
+        return "성공";
     }
 
-    public void update() {
-        System.out.print("id = ");
-        long id = sc.nextLong();
-
-        App findApp = repository.findOne(id);
+    //-- 수정 --//
+    public String update(Scanner sc, String command) {
+        App findApp = appFinder(command);
+        if (findApp == null) return "실패";
+        Long id = findApp.getId();
 
         try {
             System.out.println("명언(기존) : " + findApp.getSaying());
@@ -82,6 +84,21 @@ public class AppService {
 
         } catch (NullPointerException e) {
             System.out.println(id + "번 명언은 존재하지 않습니다.");
+        }
+        return "성공";
+    }
+
+    //-- String => App --//
+    private App appFinder(String command) {
+        String[] split = command.split("=");
+
+        if (split[0].equals("id"))
+            return repository.findOne(Long.valueOf(split[1]));
+        else if (split[0].equals("작가"))
+            return repository.findByName(split[1]);
+        else {
+            System.out.println("명령이 잘못되었습니다.");
+            return null;
         }
     }
 
@@ -111,25 +128,6 @@ public class AppService {
             throw new RuntimeException(e);
         }
     }
-
-    //-- json load --//
-    public void jsonLoad() {
-        JSONParser parser = new JSONParser();
-
-        try {
-            FileReader reader = new FileReader("/Users/choedaegug/Desktop/db/db.json");
-            Object obj = parser.parse(reader);
-
-
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     //-- text save --//
     public void fileSave(File file) {

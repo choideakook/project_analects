@@ -1,9 +1,12 @@
 package org.example.application;
 
+/**
+ * Entity
+ */
 public class App {
 
+    //-- field --//
     private Long id;
-
     private String saying;
     private String author;
 
@@ -20,16 +23,16 @@ public class App {
         return id;
     }
 
+    private App() {}
+
     //-- 수정 로직 --//
     public void updateApp(String saying, String author) {
         this.saying = saying;
         this.author = author;
     }
 
-    protected App() {}
 
     //-- getter  --//
-
 
     public Long getId() {
         return id;
