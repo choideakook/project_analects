@@ -1,5 +1,7 @@
 # 📚 명언 저장 앱 📚
 
+[🔗 application 디렉토리 바로가기](https://github.com/choideakook/project_analects/tree/main/src/main/java/org/example/application)
+
 ## ✏️ 명령어 가이드
 
 - 등록 : 새로운 명언 등록
